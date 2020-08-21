@@ -7,6 +7,8 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+void processInput(GLFWwindow* window);
+
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -29,6 +31,8 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     while(!glfwWindowShouldClose(window)) {
+        processInput(window);
+
         glfwSwapBuffers(window); // Double buffering, TODO: lookup swap-chain/triple-buffering
         glfwPollEvents();
     }
@@ -39,4 +43,10 @@ int main() {
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height); // Doesn't necessarily have to match the window size
+}
+
+void processInput(GLFWwindow* window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+        glfwSetWindowShouldClose(window, true);
+    }
 }
