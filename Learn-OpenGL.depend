@@ -1,9 +1,8 @@
 # depslib dependency file v1.0
-1598028705 source:/home/john/Documents/Projects/C++/OpenGL/learn-opengl/main.cpp
+1598044821 source:/home/john/Documents/Projects/C++/OpenGL/learn-opengl/main.cpp
 	<glad/glad.h>
 	<GLFW/glfw3.h>
 	<iostream>
-	<glm/glm.hpp>
 
 1598011362 source:/home/john/Documents/Projects/C++/OpenGL/learn-opengl/glad/glad.c
 	<stdio.h>
