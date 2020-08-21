@@ -1,0 +1,19 @@
+# Compiled binaries
+bin
+*.out
+
+# Compiled object files
+*.o
+*.slo
+*.lo
+*.obj
+
+# Pre-compiled header files
+*.gch
+*.pch
+
+# Compiled dynamic libs
+*.so
+*.dylib
+*.dll
+
