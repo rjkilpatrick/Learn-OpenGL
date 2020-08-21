@@ -98,9 +98,13 @@ int main() {
 
     // Push vertices into VBO
     float vertices[] = { // Normalised device co-ordinates
-        -0.5f, -0.5f, 0.0f,
+        0.5f, 0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
+        -0.5f, 0.5f, 0.0f,
+
+        0.5f, -0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f,
+        -0.5f, 0.5f, 0.0f
     };
 
     unsigned int VAO;
@@ -132,7 +136,7 @@ int main() {
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
         // Check for glfw events
         glfwPollEvents();
