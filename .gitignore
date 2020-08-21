@@ -17,3 +17,8 @@ bin
 *.dylib
 *.dll
 
+# Codeblocks
+*.layout
+*.depend
+bin/
+obj/
