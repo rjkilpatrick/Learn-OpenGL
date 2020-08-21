@@ -31,10 +31,20 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     while(!glfwWindowShouldClose(window)) {
+        // Handle input
         processInput(window);
 
-        glfwSwapBuffers(window); // Double buffering, TODO: lookup swap-chain/triple-buffering
+        // Update program state
+
+        // Draw to secondary buffer
+        glClearColor(0.39f, 0.58f, 0.92f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Check for glfw events
         glfwPollEvents();
+
+        // Swap draw buffers, i.e. display new image
+        glfwSwapBuffers(window); // Double buffering, TODO: lookup swap-chain/triple-buffering
     }
 
     glfwTerminate();
