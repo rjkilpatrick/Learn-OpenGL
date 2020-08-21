@@ -97,37 +97,41 @@ int main() {
     glDeleteShader(fragmentShader);
 
     // Push vertices into VBO
-    float vertices[] = { // Normalised device co-ordinates
+    float vertices1[] = { // Normalised device co-ordinates
         0.5f, 0.5f, 0.0f, // Top right
         0.5f, -0.5f, 0.0f, // Bottom right
-        -0.5f, -0.5f, 0.0f, // Bottom left
-        -0.5f, 0.5f, 0.0f // Top left
-    };
-    unsigned int indices[] = {
-        0, 1, 3, // Top right tri
-        1, 2, 3 // Bottom left tri
+        0.0f, -0.5f, 0.0f // Bottom middle
     };
 
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    float vertices2[] = {
+        -0.5f, -0.5f, 0.0f, // Bottom left
+        -0.5f, 0.5f, 0.0f, // Top left
+        0.0f, 0.5f, 0.0f, // Top middle
+    };
+
+    unsigned int VAO1, VAO2;
+    glGenVertexArrays(1, &VAO1);
+    glGenVertexArrays(1, &VAO2);
 
     // A VBO is an array of vertices for a geometry like a cube
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    unsigned int VBO1, VBO2;
+    glGenBuffers(1, &VBO1);
+    glGenBuffers(1, &VBO2);
 
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBindVertexArray(VAO1);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    glEnableVertexAttribArray(0); // Enable the VBO
+    glBindVertexArray(0); // Reset the current VBO
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
+    glBindVertexArray(VAO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
-
-    // Remove the VBO/VAO so they aren't overwritten
     glBindVertexArray(0);
+
 
     // Update, render loop
     while(!glfwWindowShouldClose(window)) {
@@ -140,10 +144,14 @@ int main() {
         glClearColor(0.39f, 0.58f, 0.92f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Draw quad
+        // Draw tri
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(VAO1);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glBindVertexArray(VAO2);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // Check for glfw events
         glfwPollEvents();
@@ -153,9 +161,10 @@ int main() {
     }
 
     // De-allocate resources, done on exit anyway, but still
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(1, &VAO1);
+    glDeleteVertexArrays(1, &VAO2);
+    glDeleteBuffers(1, &VBO1);
+    glDeleteBuffers(1, &VBO2);
     glDeleteProgram(shaderProgram);
 
     glfwTerminate();
