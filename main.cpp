@@ -20,6 +20,12 @@ const char* fragmentShaderSource = "#version 330 core\n"
     "   FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0);\n"
     "}";
 
+const char* fragmentShaderSourceYellow = "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main() {\n"
+    "   FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0);\n"
+    "}";
+
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
@@ -63,7 +69,7 @@ int main() {
         return -1;
     }
 
-    // Compile Fragment shader
+    // Compile Fragment shader 1
     unsigned int fragmentShader;
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
@@ -74,6 +80,20 @@ int main() {
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
         std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return -1;
+    }
+
+    // Compile Fragment shader 2
+    unsigned int fragmentShaderYellow;
+    fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShaderYellow, 1, &fragmentShaderSourceYellow, nullptr);
+    glCompileShader(fragmentShaderYellow);
+
+    glGetShaderiv(fragmentShaderYellow, GL_COMPILE_STATUS, &success);
+
+    if (!success) {
+        glGetShaderInfoLog(fragmentShaderYellow, 512, nullptr, infoLog);
+        std::cerr << "ERROR::SHADER::FRAGMENT_YELLOW::COMPILATION_FAILED\n" << infoLog << std::endl;
         return -1;
     }
 
@@ -92,9 +112,25 @@ int main() {
         return -1;
     }
 
-    // Delete individual shaders (they're bound in shaderProgram)
+    // Combine shaders into super shader object
+    unsigned int shaderProgramYellow; // Object that combines all the shaders
+    shaderProgramYellow = glCreateProgram();
+
+    glAttachShader(shaderProgramYellow, vertexShader);
+    glAttachShader(shaderProgramYellow, fragmentShaderYellow);
+    glLinkProgram(shaderProgramYellow);
+
+    glGetProgramiv(shaderProgramYellow, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(shaderProgramYellow, 512, nullptr, infoLog);
+        std::cerr << "ERROR::SHADER_PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return -1;
+    }
+
+    // Delete individual shaders (they're bound in shaderProgram(s))
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+    glDeleteShader(fragmentShaderYellow);
 
     // Push vertices into VBO
     float vertices1[] = { // Normalised device co-ordinates
@@ -146,10 +182,11 @@ int main() {
 
         // Draw tri
         glUseProgram(shaderProgram);
-
         glBindVertexArray(VAO1);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
+        // Draw tri
+        glUseProgram(shaderProgramYellow);
         glBindVertexArray(VAO2);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
