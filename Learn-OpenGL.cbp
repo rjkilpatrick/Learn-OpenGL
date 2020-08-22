@@ -42,6 +42,9 @@
 			<Add library="Xi" />
 			<Add library="dl" />
 		</Linker>
+		<Unit filename="glad/glad.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
