@@ -3,21 +3,24 @@
 
 #include <iostream>
 
-#include <glm/glm.hpp>
+//#include <glm/glm.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
 const char* vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 0) in vec3 aPos;\n" // Position variable has attribute position 0
+    "out vec4 vertexColor;\n" // Specify a colour output to fragment shader
     "void main() {\n"
-    "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "    gl_Position = vec4(aPos, 1.0);\n" // vec3 -> vec4 just like css with rgba()
+    "    vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n" // Set to output a dark-red colour
     "}";
 
 const char* fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
+    "in vec4 vertexColor;\n" // Input variable from fragment shader
     "void main() {\n"
-    "   FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0);\n"
+    "   FragColor = vertexColor;\n"
     "}";
 
 const unsigned int WINDOW_WIDTH = 800;
@@ -98,14 +101,13 @@ int main() {
 
     // Push vertices into VBO
     float vertices[] = { // Normalised device co-ordinates
-        0.5f, 0.5f, 0.0f, // Top right
-        0.5f, -0.5f, 0.0f, // Bottom right
         -0.5f, -0.5f, 0.0f, // Bottom left
-        -0.5f, 0.5f, 0.0f // Top left
+        0.5f, -0.5f, 0.0f, // Bottom right
+        0.0f, 0.5f, 0.0f // Top Middle
     };
+
     unsigned int indices[] = {
-        0, 1, 3, // Top right tri
-        1, 2, 3 // Bottom left tri
+        0, 1, 2
     };
 
     unsigned int VAO;
@@ -143,7 +145,7 @@ int main() {
         // Draw quad
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         // Check for glfw events
         glfwPollEvents();
@@ -151,7 +153,7 @@ int main() {
         // Swap draw buffers, i.e. display new image
         glfwSwapBuffers(window); // Double buffering, TODO: lookup swap-chain/triple-buffering
     }
-
+//
     // De-allocate resources, done on exit anyway, but still
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
