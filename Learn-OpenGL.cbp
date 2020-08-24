@@ -44,12 +44,14 @@
 			<Add library="Xi" />
 			<Add library="dl" />
 		</Linker>
+		<Unit filename="fragment.glsl" />
 		<Unit filename="glad/glad.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main.cpp" />
 		<Unit filename="shader.cpp" />
-		<Unit filename="shader.h" />
+		<Unit filename="shader.hpp" />
+		<Unit filename="vertex.glsl" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

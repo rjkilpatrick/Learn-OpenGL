@@ -23,6 +23,10 @@ class Shader
         void setFloat(const std::string &name, float value) const;
 
         void destroy();
+
+    private:
+        // std::string load_file(const char* filePath) const;
+        std::string load_file(const char* filePath) const;
 };
 
 #endif // SHADER_H

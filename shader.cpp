@@ -2,34 +2,10 @@
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
     // Retrieve vertex & fragment shaders from given paths
-    std::string vertexCode;
-    std::string fragmentCode;
-    std::ifstream vShaderFile;
-    std::ifstream fShaderFile;
-
-    vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-    try {
-        // Open files
-        vShaderFile.open(vertexPath);
-        fShaderFile.open(fragmentPath);
-        std::stringstream vShaderStream, fShaderStream;
-
-        // Read buffer into stream
-        vShaderStream << vShaderFile.rdbuf();
-        fShaderStream << fShaderFile.rdbuf();
-
-        vShaderFile.close();
-        fShaderFile.close();
-
-        vertexCode = vShaderStream.str();
-        fragmentCode = fShaderStream.str();
-    } catch (std::ifstream::failure e) {
-        std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
-    }
-
+    std::string vertexCode = load_file(vertexPath);
     const char* vShaderCode = vertexCode.c_str();
+
+    std::string fragmentCode = load_file(fragmentPath);
     const char* fShaderCode = fragmentCode.c_str();
 
     // Compile shaders
@@ -77,9 +53,36 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
     glDeleteShader(fragment);
 }
 
+
+std::string Shader::load_file(const char* filePath) const {
+    // Retrieve vertex & fragment shaders from given paths
+     std::string code;
+    std::ifstream shaderFile;
+
+    shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+    try {
+        // Open files
+        shaderFile.open(filePath);
+        std::stringstream shaderStream;
+
+        // Read buffer into stream
+        shaderStream << shaderFile.rdbuf();
+
+        shaderFile.close();
+
+        code = shaderStream.str();
+    } catch (std::ifstream::failure &e) {
+        std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
+    }
+    return code;
+}
+
+
 void Shader::use() {
     glUseProgram(program);
 }
+
 
 void Shader::setBool(const std::string &name, bool value) const {
     // Gets uniform by name
@@ -87,11 +90,13 @@ void Shader::setBool(const std::string &name, bool value) const {
     glUniform1i(glGetUniformLocation(program, name.c_str()), (int)value);
 }
 
+
 void Shader::setInt(const std::string &name, int value) const {
     // Gets uniform by name
     // Sets the uniform to value given
     glUniform1i(glGetUniformLocation(program, name.c_str()), value);
 }
+
 
 void Shader::setFloat(const std::string &name, float value) const {
     // Gets uniform by name
