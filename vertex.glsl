@@ -5,6 +5,6 @@ layout (location = 1) in vec3 aColour; // Colour variable has attribute position
 out vec3 ourColour; // Output for frag shader
 
 void main() {
-    gl_Position = vec4(aPos, 1.0); // vec3 -> vec4 just like css with rgba()
+    gl_Position = vec4(aPos.x, -aPos.y, aPos.z, 1.0); // vec3 -> vec4 just like css with rgba()
     ourColour = aColour;
 }
