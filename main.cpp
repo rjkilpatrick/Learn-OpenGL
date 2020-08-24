@@ -89,7 +89,7 @@ int main() {
 
         // Draw tri
         ourShader.use(); // Activate shader!
-//        ourShader.setFloat("floatName", 1.0f);
+        ourShader.setFloat("offset_x", 1.0f);
 
         // Render the triangle
         glBindVertexArray(VAO);
