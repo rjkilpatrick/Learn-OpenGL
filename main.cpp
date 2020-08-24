@@ -2,9 +2,10 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-#include <cmath>
+//#include <cmath>
 //#include <glm/glm.hpp>
 #include "shader.hpp"
+#include "stb_image.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -36,18 +37,21 @@ int main() {
         return -1;
     }
 
+    // Create shader program
     Shader ourShader("vertex.glsl", "fragment.glsl");
 
     // Push vertices into VBO
     float vertices[] = {
-        // Positions        // Colours
-        -0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, // Bottom left
-         0.5f, -0.5f,  0.0f,  0.0f,  1.0f,  0.0f, // Bottom right
-         0.0f,  0.5f,  0.0f,  0.0f,  0.0f,  1.0f  // Top Middle
+        // Positions          // Colours (unused)  // Texture co-ords
+         0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f, // Top right
+         0.5f, -0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f, // Bottom right
+        -0.5f, -0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f, // Bottom left
+        -0.5f,  0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f, // Top left
     };
 
     unsigned int indices[] = {
-        0, 1, 2
+        0, 2, 1,
+        0, 2, 3
     };
 
     unsigned int VAO;
@@ -66,15 +70,42 @@ int main() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
 
     // Colour
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) (3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // Texture
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // Remove the VBO/VAO so they aren't overwritten
     glBindVertexArray(0);
+
+
+    // Allocate glTexture
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // Parameterise glTexture
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Wrap in s (across)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Wrap in t (down)
+
+    // Load texture into memory and generate
+    int width, height, numChannels;
+    unsigned char* data = stbi_load("textures/container.jpg", &width, &height, &numChannels, 0);
+
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cerr << "Failed to load texture" << std::endl;
+    }
+
+    stbi_image_free(data); // Free no longer needed memory
 
     // Update, render loop
     while(!glfwWindowShouldClose(window)) {
@@ -92,8 +123,9 @@ int main() {
 //        ourShader.setFloat("floatName", 1.0f);
 
         // Render the triangle
+        glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Check for glfw events
         glfwPollEvents();
