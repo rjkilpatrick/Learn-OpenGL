@@ -51,6 +51,8 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="shader.cpp" />
 		<Unit filename="shader.hpp" />
+		<Unit filename="stb_image.cpp" />
+		<Unit filename="stb_image.hpp" />
 		<Unit filename="vertex.glsl" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

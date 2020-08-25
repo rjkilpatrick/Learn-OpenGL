@@ -85,27 +85,59 @@ int main() {
     glBindVertexArray(0);
 
 
-    // Allocate glTexture
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    // Allocate glTexture1
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glActiveTexture(GL_TEXTURE0); // Unnesccary but for consistency
+    glBindTexture(GL_TEXTURE_2D, texture1);
 
-    // Parameterise glTexture
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Wrap in s (across)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Wrap in t (down)
+    stbi_set_flip_vertically_on_load(true);
 
     // Load texture into memory and generate
-    int width, height, numChannels;
-    unsigned char* data = stbi_load("textures/container.jpg", &width, &height, &numChannels, 0);
+    int width1, height1, numChannels1;
+    unsigned char* data = stbi_load("textures/container.jpg", &width1, &height1, &numChannels1, 0);
 
     if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cerr << "Failed to load texture" << std::endl;
     }
 
     stbi_image_free(data); // Free no longer needed memory
+
+    // Allocate glTexture2
+    unsigned int texture2;
+    glGenTextures(1, &texture2);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2); // Push textures
+
+    int width2, height2, numChannels2;
+    data = stbi_load("textures/awesomeface.png", &width2, &height2, &numChannels2, 0);
+
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width2, height2, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cerr << "Failed to load texture" << std::endl;
+    }
+
+    stbi_image_free(data); // Free no longer needed memory
+
+    // Parameterise glTexture2
+    for (int i = 0; i < 2; i++) {
+        glActiveTexture(GL_TEXTURE0 + i);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Wrap in s (across)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Wrap in t (down)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
+    ourShader.use();
+
+    ourShader.setInt("texture1", 0);
+    ourShader.setInt("texture2", 1);
+
 
     // Update, render loop
     while(!glfwWindowShouldClose(window)) {
@@ -118,12 +150,14 @@ int main() {
         glClearColor(0.39f, 0.58f, 0.92f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Draw tri
-        ourShader.use(); // Activate shader!
-//        ourShader.setFloat("floatName", 1.0f);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
-        // Render the triangle
-        glBindTexture(GL_TEXTURE_2D, texture);
+        // Draw quad
+        ourShader.use(); // Activate shader!
+
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -133,7 +167,7 @@ int main() {
         // Swap draw buffers, i.e. display new image
         glfwSwapBuffers(window); // Double buffering, TODO: lookup swap-chain/triple-buffering
     }
-//
+
     // De-allocate resources, done on exit anyway, but still
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
@@ -153,3 +187,5 @@ void processInput(GLFWwindow* window) {
         glfwSetWindowShouldClose(window, true);
     }
 }
+
+
