@@ -43,10 +43,10 @@ int main() {
     // Push vertices into VBO
     float vertices[] = {
         // Positions          // Colours (unused)  // Texture co-ords
-         0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  2.0f,  2.0f, // Top right
-         0.5f, -0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  2.0f,  0.0f, // Bottom right
-        -0.5f, -0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f, // Bottom left
-        -0.5f,  0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f,  2.0f, // Top left
+         0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.6f,  0.6, // Top right
+         0.5f, -0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.6f,  0.4f, // Bottom right
+        -0.5f, -0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.4f,  0.4f, // Bottom left
+        -0.5f,  0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.4f,  0.6f, // Top left
     };
 
     unsigned int indices[] = {
@@ -127,15 +127,10 @@ int main() {
     // Parameterise glTexture2
     for (int i = 0; i < 2; i++) {
         glActiveTexture(GL_TEXTURE0 + i);
-        if (i == 0) {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        } else {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Wrap in s (across)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Wrap in t (down)
-        }
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Wrap in s (across)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Wrap in t (down)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
     ourShader.use();
