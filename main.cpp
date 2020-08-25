@@ -3,7 +3,7 @@
 
 #include <iostream>
 //#include <cmath>
-//#include <glm/glm.hpp>
+#include <glm/glm.hpp>
 #include "shader.hpp"
 #include "stb_image.hpp"
 
@@ -12,6 +12,8 @@ void processInput(GLFWwindow* window);
 
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
+
+float mix_amount = 0.2f;
 
 int main() {
     // Configure GLFW
@@ -43,10 +45,10 @@ int main() {
     // Push vertices into VBO
     float vertices[] = {
         // Positions          // Colours (unused)  // Texture co-ords
-         0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.6f,  0.6, // Top right
-         0.5f, -0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.6f,  0.4f, // Bottom right
-        -0.5f, -0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.4f,  0.4f, // Bottom left
-        -0.5f,  0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.4f,  0.6f, // Top left
+         0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f, // Top right
+         0.5f, -0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f, // Bottom right
+        -0.5f, -0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f, // Bottom left
+        -0.5f,  0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f, // Top left
     };
 
     unsigned int indices[] = {
@@ -129,8 +131,8 @@ int main() {
         glActiveTexture(GL_TEXTURE0 + i);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Wrap in s (across)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Wrap in t (down)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
     ourShader.use();
@@ -157,6 +159,7 @@ int main() {
 
         // Draw quad
         ourShader.use(); // Activate shader!
+        ourShader.setFloat("mix_amount", mix_amount);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -183,8 +186,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void processInput(GLFWwindow* window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        mix_amount += 0.01f;
+        mix_amount = glm::clamp(mix_amount, 0.f, 1.f);
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        mix_amount -= 0.01f;
+        mix_amount = glm::clamp(mix_amount, 0.f, 1.f);
     }
 }
 
