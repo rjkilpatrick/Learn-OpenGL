@@ -91,7 +91,7 @@ int main() {
     glActiveTexture(GL_TEXTURE0); // Unnesccary but for consistency
     glBindTexture(GL_TEXTURE_2D, texture1);
 
-    stbi_set_flip_vertically_on_load(true);
+//    stbi_set_flip_vertically_on_load(true);
 
     // Load texture into memory and generate
     int width1, height1, numChannels1;
